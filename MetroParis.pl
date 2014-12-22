@@ -1,5 +1,4 @@
 #Base de Conhecimento 
-
 /*******Linha 1*******/
 #estacao(nomeEstacao,Linha)
 estacao(ladefence,1).
