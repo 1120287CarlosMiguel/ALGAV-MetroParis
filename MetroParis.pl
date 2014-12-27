@@ -1,5 +1,5 @@
-#Base de Conhecimento 
-/**linha(nomeEstacao,lista com estacoes)**/
+%Base de Conhecimento
+%linha(nomeEstacao,lista com estacoes)
 /*******Linha 1*******/
 linha(1,[ladefence,
         esplanadedeladefende,
@@ -26,7 +26,7 @@ linha(1,[ladefence,
         saintmande,
         berault,
         chateaudevincennes]).
-        
+
 /******Linha 2 ********/
 linha(2,[portedauphine,
         victorhugo,
@@ -123,4 +123,12 @@ linha(9,[pontdesevres,
         croisdechavaux,
         mairiedemontreuil]).
 
-
+%horario(linha,direcao,1metro(min),ultMetro(min),tempoDia,tempoNoite,tempoSabado,tempoDomingo)
+horario(1,chateaudevincennes,330,1482,4,7,8,8).
+horario(1,ladefence,330,1482,4,7,8,8).
+horario(2,nation,330,1483,4,7,8,8).
+horario(2,portedauphine,330,1482,4,7,8,8).
+horario(6,nation,330,1482,4,12,10,10).
+horario(6,charlesdegaulleetoile,330,1483,4,12,10,10).
+horario(9,mairiedemontreuil,330,1467,9,12,13,10).
+horario(9,pontdesevres,325,1467,9,12,13,10).

@@ -1,4 +1,2 @@
-#:-[metroparis].
-#:-[gera_dados].
+#:-[metroparis].:-[gera_dados].
 :-[predicados].
-
