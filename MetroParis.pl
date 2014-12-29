@@ -132,3 +132,17 @@ horario(6,nation,330,1482,4,12,10,10).
 horario(6,charlesdegaulleetoile,330,1483,4,12,10,10).
 horario(9,mairiedemontreuil,330,1467,9,12,13,10).
 horario(9,pontdesevres,325,1467,9,12,13,10).
+
+% pontoDeInteresse(nome, estacaoproxima, hor abertura, hor fecho, dur
+% visita)
+pontoDeInteresse(arcDeTriomphe, charlesdegaulle - etoile, 0,0,15).
+pontoDeInteresse(museeBaccarat, boissiere, 600,1080, 120).
+pontoDeInteresse(museedeLHomme, trocadero, 600,1020, 120).
+pontoDeInteresse(museeNationalDeLaMarine, trocadero, 600,1080, 60).
+pontoDeInteresse(laTourEiifel, birlakeim, 540,1380, 120).
+pontoDeInteresse(egliseSaintLeon, dupleix, 480, 1170, 30).
+pontoDeInteresse(marcheSaxeBreteuil, sevreslecourbe, 420, 900, 30).
+pontoDeInteresse(museeNationalDeCeramique, pontdesevres, 600, 1020, 30).
+pontoDeInteresse(jardinduRanelagh, lamuette, 0, 1140, 120).
+pontoDeInteresse(gareSaintLazare, chaussedantinlafayette, 300, 90,20).
+pontoDeInteresse(museegrevin, richelieudrouot, 600, 1140, 120).
