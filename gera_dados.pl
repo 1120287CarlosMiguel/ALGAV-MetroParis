@@ -1,6 +1,7 @@
 :-dynamic cruza/3.
 :-dynamic estacoes/1.
 :-dynamic estaccoes_linhas/2.
+:-dynamic liga/3.
 
 intersecao([],_,[]).
 intersecao([X|L],L1,L2):- not(member(X,L1)),!,intersecao(L,L1,L2).
@@ -32,6 +33,16 @@ percorrerLista([H|T]):-calcularlinhas(H,Linhas),
 
 calcularlinhas(E,Linhas):-findall(N,(linha(N,L),member(E,L)),Linhas).
 
+cria_liga(_,[H|[]]).
+cria_liga(Linha,[H1|[H2|T]]):-assertz(liga(Linha,H1,H2)),cria_liga(Linha,[H2|T]).
+
+gera_liga:-linha(Linha,ListaEstacoes),
+           cria_liga(Linha,ListaEstacoes),
+           false.
+
+gera_liga:-true.
+
 :-gera_cruzamentos.
 :-gera_estacoes.
 :-gera_estacao_linhas.
+:-gera_liga.

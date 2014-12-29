@@ -8,7 +8,7 @@ imprime_menu :- repeat,
                 write('0-Sair'),nl,
                 write('Escolha uma das opcoes(. para finalizar escolha): '),
                 read(Op),
-                Op > -1, Op <3,
+                number(Op),Op > -1, Op <3,
                 escolher_opcao_menu(Op).
 
 escolher_opcao_menu(1) :- menu_percurso.
@@ -39,14 +39,32 @@ menu_percurso:- write('***Vamos iniciar a configuracao do seu percurso***'),nl,
                 nl,write('3-Domingo'),
                 nl,write('Selecione uma das opcoes: '),
                 read(OpT),
-                OpT<4,OpT>0,
-                escolher_opcao_tempo(OpT,Min,Tempo).
+                number(OpT),OpT<4,OpT>0,
+                escolher_opcao_tempo(OpT,Min,TipoDia),
+                repeat,
+                write('Que caminho deseja:'),nl,
+                write('1-Menos trocas'),nl,
+                write('2-Mais rapido'),nl,
+                write('3-Menor percurso a pe'),nl,
+                read(OpTipo),
+                number(OpTipo),OpTipo > 0, OpTipo < 4,
+                cria_percurso(OpTipo,TipoDia,Min,Eorigem,Edestino,_).
 
-escolher_opcao_tempo(1,Min,Tempo):-Min<1200,Tempo = dia.
-escolher_opcao_tempo(1,Min,Tempo):-Min>1200,Tempo = noite.
+
+
+escolher_opcao_tempo(1,Min,Tipo):-Min<1200,Tipo = dia.
+escolher_opcao_tempo(1,Min,Tipo):-Min>1200,Tipo = noite.
 escolher_opcao_tempo(2,_,sabado).
 escolher_opcao_tempo(3,_,domingo).
 
+%menos trocas
+cria_percurso(1,TipoDia,Min,Eorigem,Edestino,Precurso):-percurso_menos_trocas(Eorigem,Edestino,Min,TipoDia,Inicio,Fim,Percurso).
+
+%mais rapido
+cria_percurso(2,TipoDia,Min,Eorigem,Edestino,Precurso).
+
+%menor percuros a pe
+cria_percurso(3,TipoDia,Min,Eorigem,Edestino,Precurso).
 
 
 :-write('Bem vindo a rede de metro de Paris'),nl.

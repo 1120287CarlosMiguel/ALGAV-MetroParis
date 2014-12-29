@@ -37,3 +37,9 @@ horas_para_minutos([H|[M]],Res):- atom_number(H,NH),atom_number(M,NM),
                                   Res is Hora + NM.
 
 horas_para_minutos(_,_):-write('Hora invalida'),nl,false.
+
+/*******************************
+predicados para gerar percursos
+********************************/
+
+percurso_menos_trocas(Eorigem,Edestino,MinEscolhido,TipoDia,MinInicio,MinFim,Percurso).
