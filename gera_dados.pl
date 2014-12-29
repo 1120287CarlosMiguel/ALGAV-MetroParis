@@ -18,7 +18,7 @@ cruzamento:- linha(N1,LE1),
 gera_estacoes:-findall(C,linha(_,C),L),
                unir_lista(L,L1),!,
                assertz(estacoes(L1)).
-               
+
 unir_lista([],[]).
 unir_lista([H],H).
 unir_lista([H|T],R):-unir_lista(T,R1),union(H,R1,R).
