@@ -1,5 +1,5 @@
-%:-[metroparis].
-%:-[gera_dados].
+:-[metroparis].
+:-[gera_dados].
 :-[predicados].
 
 imprime_menu :- repeat,
@@ -61,7 +61,7 @@ escolher_opcao_tempo(2,_,sabado).
 escolher_opcao_tempo(3,_,domingo).
 
 %menos trocas
-%cria_percurso(1,TipoDia,Min,Eorigem,Edestino,Percurso).
+cria_percurso(1,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_menos_trocas(Eorigem,Edestino,TipoDia,Percurso).
 
 %mais rapido
 cria_percurso(2,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_mais_rapido(Eorigem,Edestino,TipoDia,Percurso).
@@ -69,12 +69,17 @@ cria_percurso(2,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_mais_rapido(Eor
 %menor percuros a pe
 %cria_percurso(3,TipoDia,Min,Eorigem,Edestino,Precurso).
 
-imprime_percurso([Perc,Dur]):-nl,write('Duracao: '),write(Dur),nl,
+imprime_percurso([Perc,Dur,Linhas]):-nl,write('Duracao: '),write(Dur),nl,
+                              write('Linhas: '),nl,
+                              imprime_linhas(Linhas),
                               write('Estacoes: '),nl,
                               imprime_percurso1(Perc).
 
 imprime_percurso1([]):-!.
 imprime_percurso1([H|T]):-write(H),nl,imprime_percurso1(T).
+
+imprime_linhas([H]):-!,write(H),nl.
+imprime_linhas([H|T]):-write(H),write('=>'),imprime_linhas(T).
 
 
 :-write('Bem vindo a rede de metro de Paris'),nl.
