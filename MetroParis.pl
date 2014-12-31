@@ -53,7 +53,7 @@ linha(2,[portedauphine,
         auguste,
         alexandredumas,
         avron,
-        nat]).
+        nation]).
 
 /******Linha 6********/
 linha(6,[charlesdegaulleetoile,

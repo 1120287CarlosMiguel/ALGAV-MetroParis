@@ -34,7 +34,7 @@ percorrerLista([H|T]):-calcularlinhas(H,Linhas),
 calcularlinhas(E,Linhas):-findall(N,(linha(N,L),member(E,L)),Linhas).
 
 cria_liga(_,[H|[]]).
-cria_liga(Linha,[H1|[H2|T]]):-assertz(liga(Linha,H1,H2)),cria_liga(Linha,[H2|T]).
+cria_liga(Linha,[H1|[H2|T]]):-assertz(liga(Linha,H1,H2)),assertz(liga(Linha,H2,H1)),cria_liga(Linha,[H2|T]).
 
 gera_liga:-linha(Linha,ListaEstacoes),
            cria_liga(Linha,ListaEstacoes),

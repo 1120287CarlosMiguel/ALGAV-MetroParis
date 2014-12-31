@@ -42,4 +42,39 @@ horas_para_minutos(_,_):-write('Hora invalida'),nl,false.
 predicados para gerar percursos
 ********************************/
 
-percurso_menos_trocas(Eorigem,Edestino,MinEscolhido,TipoDia,MinInicio,MinFim,Percurso).
+percurso_mais_rapido(Origem,Destino,Dia,Perc):-gera_percursos(Origem,Destino,Dia,Lista),
+																							 percurso_rapido(Lista,[],Perc).
+
+percurso_rapido([],Perc,Perc):-!.
+percurso_rapido([H|T],[],Perc):-percurso_rapido(T,H,Perc).
+percurso_rapido([[Perc1,Temp1]|T],[_,Temp2],Perc):- Temp1 < Temp2,
+																									 percurso_rapido(T,[Perc1,Temp1],Perc).
+
+percurso_rapido([_|T],Perc,Percf):-percurso_rapido(T,Perc,Percf).
+
+gera_percursos(Orig,Dest,Dia,Lista):-findall([Perc,Custo],goBranch(Orig,Dest,Perc,Dia,Custo),Lista).
+
+
+goBranch(Orig,Dest,Perc,Dia,Custo):-
+	go1Branch([(0,[Orig])],Dest,P,Dia,Custo),
+	reverse(P,Perc).
+
+go1Branch([(C,Prim)|_],Dest,Prim,_,C):- Prim=[Dest|_].
+go1Branch([(_,[Dest|_])|Resto],Dest,Perc,Dia,Custo):- !, go1Branch(Resto,Dest,Perc,Dia,Custo).
+go1Branch([(C,[Ult|T])|Outros],Dest,Perc,Dia,Custo):-
+		findall((NC,[Z,Ult|T]),
+			(proximo_no(Ult,T,Z,C1,Dia),NC is C+C1),Lista),
+		append(Outros,Lista,NPerc),
+		sort(NPerc,NPerc1),
+		%write(NPerc1),nl,
+		go1Branch(NPerc1,Dest,Perc,Dia,Custo).
+
+proximo_no(X,T,Z,C,Dia):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,Linha), \+ member(Z,T).
+
+tempo_de_viagem(dia,C,Linha):-horario(Linha,_,_,_,C,_,_,_).
+
+tempo_de_viagem(noite,C,Linha):-horario(Linha,_,_,_,_,C,_,_).
+
+tempo_de_viagem(sabado,C,Linha):-horario(Linha,_,_,_,_,_,C,_).
+
+tempo_de_viagem(domingo,C,Linha):-horario(Linha,_,_,_,_,_,_,C).
