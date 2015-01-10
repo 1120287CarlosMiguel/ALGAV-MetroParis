@@ -14,7 +14,7 @@ imprime_menu :- repeat,
 
 escolher_opcao_menu(1) :- menu_percurso.
 
-escolher_opcao_menu(2).
+escolher_opcao_menu(2) :- menu_guia.
 
 escolher_opcao_menu(_):-halt.
 
@@ -53,6 +53,20 @@ menu_percurso:- write('***Vamos iniciar a configuracao do seu percurso***'),nl,
                 cria_percurso(OpTipo,TipoDia,Min,Eorigem,Edestino,Percurso),
                 imprime_percurso(Percurso).
 
+menu_guia:-write('***Vamos iniciar a configuracao do seu guia***'),nl,
+	write('Numero de Pontos de Iteresse? '),nl,
+	read(NPDI),
+	ler_pdis1(NPDI,Lista),
+	pontos_de_interesse(Lista).
+
+ler_pdis1(N,Lista):-ler_pdis2(0,N,Lista).
+ler_pdis2(N,N,_).
+ler_pdis2(N1,N,[H|T]):-write(N1),write('º ponto de interesse: '),read(H),
+	verficar_pdi(H),N2 is N1+1,ler_pdis2(N2,N,T);write('erro').
+
+/*
+
+	*/
 
 
 escolher_opcao_tempo(1,Min,Tipo):-Min<1200,Tipo = dia.

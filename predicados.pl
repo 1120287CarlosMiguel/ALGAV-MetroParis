@@ -91,8 +91,21 @@ tempo_de_viagem(sabado,C,Linha):-horario(Linha,_,_,_,_,_,C,_).
 tempo_de_viagem(domingo,C,Linha):-horario(Linha,_,_,_,_,_,_,C).
 
 /****************************
+********** Visitas **********
+****************************/
+
+/*pontos_de_interesse(PDI*/
+pontos_de_interesse([]):-!.
+pontos_de_interesse([H|T]):-pontoDeInteresse(H,Estacao,_,_,_),write('--->'), write(Estacao), pontos_de_interesse(T).
+
+verficar_pdi(PDI):-pontoDeInteresse(PDI,_,_,_,_).
+/***************************/
+
+/****************************
 Predicados auxiliares
 ****************************/
+
+
 
 remove_repetidos(LisR,Final):-remove_repetidos(LisR,[],Final).
 

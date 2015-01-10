@@ -59,7 +59,8 @@ linha(2,[portedauphine,
 linha(6,[charlesdegaulleetoile,
         kleber,
         boissiere,
-        trocaderopassy,
+        trocadero,
+		passy,
         birhakeim,
         dupleix,
         lamottepicquetgrenelle,
@@ -135,14 +136,14 @@ horario(9,pontdesevres,325,1467,9,12,13,10).
 
 % pontoDeInteresse(nome, estacaoproxima, hor abertura, hor fecho, dur
 % visita)
-pontoDeInteresse(arcDeTriomphe, charlesdegaulle - etoile, 0,0,15).
-pontoDeInteresse(museeBaccarat, boissiere, 600,1080, 120).
-pontoDeInteresse(museedeLHomme, trocadero, 600,1020, 120).
-pontoDeInteresse(museeNationalDeLaMarine, trocadero, 600,1080, 60).
-pontoDeInteresse(laTourEiifel, birlakeim, 540,1380, 120).
-pontoDeInteresse(egliseSaintLeon, dupleix, 480, 1170, 30).
-pontoDeInteresse(marcheSaxeBreteuil, sevreslecourbe, 420, 900, 30).
-pontoDeInteresse(museeNationalDeCeramique, pontdesevres, 600, 1020, 30).
-pontoDeInteresse(jardinduRanelagh, lamuette, 0, 1140, 120).
-pontoDeInteresse(gareSaintLazare, chaussedantinlafayette, 300, 90,20).
-pontoDeInteresse(museegrevin, richelieudrouot, 600, 1140, 120).
+pontoDeInteresse(arcDeTriomphe, charlesdegaulleetoile, 0:0,0:0,15).
+pontoDeInteresse(museeBaccarat, boissiere, 10:0,18:0, 120).
+pontoDeInteresse(museedeLHomme, trocadero, 10:0,17:30, 120).
+pontoDeInteresse(museeNationalDeLaMarine, trocadero, 10:0,18:0, 60).
+pontoDeInteresse(laTourEiifel, birhakeim, 9:30,23:0, 120).
+pontoDeInteresse(egliseSaintLeon, dupleix, 8:30, 19:30, 30).
+pontoDeInteresse(marcheSaxeBreteuil, sevreslecourbe, 7:0, 15:0, 30).
+pontoDeInteresse(museeNationalDeCeramique, pontdesevres, 10:0, 17:0, 30).
+pontoDeInteresse(jardinduRanelagh, lamuette, 0:0, 19:0, 120).
+pontoDeInteresse(gareSaintLazare, chausseedantinlafayette, 5:0, 0:0,20).
+pontoDeInteresse(museegrevin, richelieudruout, 10:0, 19:00, 120).
