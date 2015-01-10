@@ -136,7 +136,7 @@ horario(9,pontdesevres,325,1467,9,12,13,10).
 
 % pontoDeInteresse(nome, estacaoproxima, hor abertura, hor fecho, dur
 % visita)
-pontoDeInteresse(arcDeTriomphe, charlesdegaulleetoile, 0:0,0:0,15).
+pontoDeInteresse(arcDeTriomphe, charlesdegaulleetoile, 0:0,0:0,30).
 pontoDeInteresse(museeBaccarat, boissiere, 10:0,18:0, 120).
 pontoDeInteresse(museedeLHomme, trocadero, 10:0,17:30, 120).
 pontoDeInteresse(museeNationalDeLaMarine, trocadero, 10:0,18:0, 60).
@@ -145,5 +145,5 @@ pontoDeInteresse(egliseSaintLeon, dupleix, 8:30, 19:30, 30).
 pontoDeInteresse(marcheSaxeBreteuil, sevreslecourbe, 7:0, 15:0, 30).
 pontoDeInteresse(museeNationalDeCeramique, pontdesevres, 10:0, 17:0, 30).
 pontoDeInteresse(jardinduRanelagh, lamuette, 0:0, 19:0, 120).
-pontoDeInteresse(gareSaintLazare, chausseedantinlafayette, 5:0, 0:0,20).
+pontoDeInteresse(gareSaintLazare, chausseedantinlafayette, 5:0, 0:0,30).
 pontoDeInteresse(museegrevin, richelieudruout, 10:0, 19:00, 120).
