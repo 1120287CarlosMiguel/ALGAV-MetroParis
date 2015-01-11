@@ -64,10 +64,6 @@ ler_pdis2(N,N,_).
 ler_pdis2(N1,N,[H|T]):-write(N1),write('� ponto de interesse: '),read(H),
 	verficar_pdi(H),N2 is N1+1,ler_pdis2(N2,N,T);write('erro').
 
-/*
-
-	*/
-
 
 escolher_opcao_tempo(1,_,dia).
 escolher_opcao_tempo(2,_,sabado).
@@ -80,10 +76,10 @@ cria_percurso(1,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_menos_trocas(Eo
 cria_percurso(2,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_mais_rapido(Eorigem,Edestino,Min,TipoDia,Percurso).
 
 %menor percuros a pe
-%cria_percurso(3,TipoDia,Min,Eorigem,Edestino,Precurso).
+cria_percurso(3,TipoDia,Min,Eorigem,Edestino,Precurso):-percurso_menos_trocas(Eorigem,Edestino,Min,TipoDia,Percurso).
 
-imprime_percurso([Perc,_,Linhas,[H|T]],Min):-nl,write('Hora Escolhida: '),write(Min),nl,
-                              write('Duracao: '), Dur is H - Min, write(Dur),nl,
+imprime_percurso([Perc,_,Linhas,[H|T]],Min):-nl,write('Hora Escolhida: '),minutos_para_horas(Min),nl,
+                              write('Duracao: '), Dur is H - Min, minutos_para_horas(Dur),nl,
                               reverse([H|T],Horas),
                               write('Linhas: '),nl,
                               imprime_linhas(Linhas),
@@ -91,7 +87,7 @@ imprime_percurso([Perc,_,Linhas,[H|T]],Min):-nl,write('Hora Escolhida: '),write(
                               imprime_percurso1(Perc,Horas).
 
 imprime_percurso1([H],[]):-!,write(H),nl.
-imprime_percurso1([H1|T1],[H2|T2]):-write(H1),write('  '),write(H2),nl,imprime_percurso1(T1,T2).
+imprime_percurso1([H1|T1],[H2|T2]):-write(H1),write('  '),minutos_para_horas(H2),nl,imprime_percurso1(T1,T2).
 
 imprime_linhas([H]):-!,write(H),nl.
 imprime_linhas([H|T]):-write(H),write('=>'),imprime_linhas(T).

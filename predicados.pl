@@ -38,6 +38,8 @@ horas_para_minutos([H|[M]],Res):- atom_number(H,NH),atom_number(M,NM),
 
 horas_para_minutos(_,_):-write('Hora invalida'),nl,false.
 
+minutos_para_horas(Min):-Minutos is Min mod 60,Horas is Min // 60, write(Horas),write(':'),write(Minutos).
+
 /*******************************
 predicados para gerar percursos
 ********************************/
@@ -104,16 +106,38 @@ tempo_de_viagem(dia,C,Tempo,Linha):-(Tempo<1200,horario(Linha,_,_,_,_,C,_,_,_),!
 tempo_de_viagem(sabado,C,_,Linha):-horario(Linha,_,_,_,_,_,_,C,_).
 tempo_de_viagem(domingo,C,_,Linha):-horario(Linha,_,_,_,_,_,_,_,C).
 
-calcula_proxima_frequencia(Tempo,Frequencia,TempC,TempoFinal) :-Tempo > TempC, Res is Tempo mod Frequencia, Res == 0, TempoFinal is Tempo,!.
+calcula_proxima_frequencia(Temp,Frequencia,TempC,TempoFinal) :-Temp > TempC,Res is Temp mod Frequencia,
+																															 Res == 0, TempoFinal is Temp,!.
 
 calcula_proxima_frequencia(Tempo,Frequencia,TempC,TempoFinal) :- NT is Tempo + 1,
 												!,calcula_proxima_frequencia(NT, Frequencia,TempC,TempoFinal).
 
 /**************************************************
-Calcular 1 e utlimo metro de determinada paragem
+Lista com 1 e Ultimo metro a chegar a paragem de determinada paragem
 ***************************************************/
 
-horario_paragem(Origem,Destino,Dia,Horario):-liga(Linha,Origem,Destino), bagof(H,mostraHorario(Linha,dia,H),Horario).
+horario_paragem(Origem,Destino,Dia,Horario):-liga(Linha,Origem,Destino),
+																						 bagof(H,mostraHorario(Linha,Dia,H),Horarios),
+																						 encontra_horarios(Origem,Destino,Horarios,[],TodosH),
+																						 sort(TodosH,HoraFinal),
+																						 horario_abertura_fecho(HoraFinal,[],Final),
+																						Horario = Final.
+
+horario_abertura_fecho([],Hora,Horario):-!,Horario = Hora.
+horario_abertura_fecho([H|T],[],Horario):-!,horario_abertura_fecho(T,[H],Horario).
+horario_abertura_fecho([H|[]],Hor,Horario):-!,horario_abertura_fecho([],[H|Hor],Horario).
+horario_abertura_fecho([_|T],Hor,Horario):-!,horario_abertura_fecho(T,Hor,Horario).
+
+encontra_horarios(_,_,[],Horarios,Horarios):-!.
+encontra_horarios(Origem,Destino,[H|T],[],Horario):-encontra_horarios1(Origem,Destino,H,[],Hor),!,
+																										encontra_horarios(Origem,Destino,T,Hor,Horario).
+encontra_horarios(Origem,Destino,[H|T],Hor,Horario):-encontra_horarios1(Origem,Destino,H,[],HorTemp),
+																										 append(Hor,HorTemp,NHor),!,
+																									   encontra_horarios(Origem,Destino,T,NHor,Horario).
+
+encontra_horarios1(_,_,[],Temp,Temp):-!.
+encontra_horarios1(Origem,Destino,[(Origem,Destino,Tempo)|T],Temp,Horario):-!,encontra_horarios1(Origem,Destino,T,[(Origem,Destino,Tempo)|Temp],Horario).
+encontra_horarios1(Origem,Destino,[_|T],Temp,Horario):-!,encontra_horarios1(Origem,Destino,T,Temp,Horario).
 
 
 /****************************************************
