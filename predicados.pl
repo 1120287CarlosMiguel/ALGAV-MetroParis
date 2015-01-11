@@ -87,19 +87,34 @@ go1Branch([(MinDes,Horas,Lin,C,[Ult|T])|Outros],Dest,Perc,Dia,Custo,Linhas,Hor):
 		%write(NPerc1),nl,
 		go1Branch(NPerc1,Dest,Perc,Dia,Custo,Linhas,Hor).
 
-proximo_no(X,T,Z,C,Dia,Linhas,Nl,T,MinDes,[],NHoras):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,Linha),
-																											\+ member(Z,T), Nl = [Linha|Linhas], encontra_hora(X,Z,Dia,MinDes,(_,_,H)),
+proximo_no(X,T,Z,C,Dia,Linhas,Nl,T,MinDes,[],NHoras):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,MinDes,Linha),
+																											\+ member(Z,T), Nl = [Linha|Linhas],
+																											calcula_proxima_frequencia(MinDes,C,MinDes,H),
+																											%encontra_hora(X,Z,Dia,MinDes,(_,_,H)),
 																											NHoras = [H].
 
-proximo_no(X,T,Z,C,Dia,Linhas,Nl,T,_,[Hora|Tail],NHoras):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,Linha),
-																											\+ member(Z,T), Nl = [Linha|Linhas], encontra_hora(X,Z,Dia,Hora,(_,_,H)),
+proximo_no(X,T,Z,C,Dia,Linhas,Nl,T,_,[Hora|Tail],NHoras):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,Hora,Linha),
+																											\+ member(Z,T), Nl = [Linha|Linhas],
+																											calcula_proxima_frequencia(Hora,C,Hora,H),
+																											%encontra_hora(X,Z,Dia,Hora,(_,_,H)),
 																											NHoras = [H,Hora|Tail].
 
 
-tempo_de_viagem(dia,C,Linha):-horario(Linha,_,_,_,_,C,_,_,_).
-tempo_de_viagem(noite,C,Linha):-horario(Linha,_,_,_,_,_,C,_,_).
-tempo_de_viagem(sabado,C,Linha):-horario(Linha,_,_,_,_,_,_,C,_).
-tempo_de_viagem(domingo,C,Linha):-horario(Linha,_,_,_,_,_,_,_,C).
+tempo_de_viagem(dia,C,Tempo,Linha):-(Tempo<1200,horario(Linha,_,_,_,_,C,_,_,_),!;horario(Linha,_,_,_,_,_,C,_,_)).
+tempo_de_viagem(sabado,C,_,Linha):-horario(Linha,_,_,_,_,_,_,C,_).
+tempo_de_viagem(domingo,C,_,Linha):-horario(Linha,_,_,_,_,_,_,_,C).
+
+calcula_proxima_frequencia(Tempo,Frequencia,TempC,TempoFinal) :-Tempo > TempC, Res is Tempo mod Frequencia, Res == 0, TempoFinal is Tempo,!.
+
+calcula_proxima_frequencia(Tempo,Frequencia,TempC,TempoFinal) :- NT is Tempo + 1,
+												!,calcula_proxima_frequencia(NT, Frequencia,TempC,TempoFinal).
+
+/**************************************************
+Calcular 1 e utlimo metro de determinada paragem
+***************************************************/
+
+horario_paragem(Origem,Destino,Dia,Horario):-liga(Linha,Origem,Destino), bagof(H,mostraHorario(Linha,dia,H),Horario).
+
 
 /****************************************************
 Retorna a elemento com hora mais proxima da desejada

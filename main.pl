@@ -61,7 +61,7 @@ menu_guia:-write('***Vamos iniciar a configuracao do seu guia***'),nl,
 
 ler_pdis1(N,Lista):-ler_pdis2(0,N,Lista).
 ler_pdis2(N,N,_).
-ler_pdis2(N1,N,[H|T]):-write(N1),write('º ponto de interesse: '),read(H),
+ler_pdis2(N1,N,[H|T]):-write(N1),write('ï¿½ ponto de interesse: '),read(H),
 	verficar_pdi(H),N2 is N1+1,ler_pdis2(N2,N,T);write('erro').
 
 /*
@@ -90,7 +90,7 @@ imprime_percurso([Perc,_,Linhas,[H|T]],Min):-nl,write('Hora Escolhida: '),write(
                               write('Estacoes: '),nl,
                               imprime_percurso1(Perc,Horas).
 
-imprime_percurso1([],[]):-!.
+imprime_percurso1([H],[]):-!,write(H),nl.
 imprime_percurso1([H1|T1],[H2|T2]):-write(H1),write('  '),write(H2),nl,imprime_percurso1(T1,T2).
 
 imprime_linhas([H]):-!,write(H),nl.
