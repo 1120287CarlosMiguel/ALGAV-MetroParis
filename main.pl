@@ -76,7 +76,7 @@ cria_percurso(1,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_menos_trocas(Eo
 cria_percurso(2,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_mais_rapido(Eorigem,Edestino,Min,TipoDia,Percurso).
 
 %menor percuros a pe
-cria_percurso(3,TipoDia,Min,Eorigem,Edestino,Precurso):-percurso_menos_trocas(Eorigem,Edestino,Min,TipoDia,Percurso).
+cria_percurso(3,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_menos_trocas(Eorigem,Edestino,Min,TipoDia,Percurso).
 
 imprime_percurso([Perc,_,Linhas,[H|T]],Min):-nl,write('Hora Escolhida: '),minutos_para_horas(Min),nl,
                               write('Duracao: '), Dur is H - Min, minutos_para_horas(Dur),nl,
