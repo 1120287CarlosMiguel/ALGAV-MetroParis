@@ -141,8 +141,55 @@ lista_frequencias(Linha,Estacao,NEstacao,HoraIn,HoraFim,FreqDia,FreqNoite,ListaT
 																									 									lista_frequencias(Linha,NEstacao,NNEstacao,NHora,HoraFim,FreqDia,FreqNoite,[(NEstacao,NNEstacao,HoraIn)|ListaTemp],ListaFinal).
 
 /****************************
+********** Visitas **********
+****************************/
+
+/*pontos_de_interesse(PDI */
+/* [PDI,Estacao, Duracao */
+/*
+1 lista_pdi_estacao
+2 ver ao a lista que dura menos
+ */
+
+pontos_de_interesse(ListPDI):- todos_guias(ListPDI, R1), listas_pdis_estacoes(R1,R2), somar_todos(R2,Guia), sort(Guia, [T,H|_]),write('Tempo: '),write(T),nl,imprimirGuia(H).
+
+imprimirGuia([]):-!.
+imprimirGuia([H|T]):-write(H),nl, imprimirGuia(T).
+
+listas_pdis_estacoes([],[]).
+listas_pdis_estacoes([H1|T1], [H2|T2]):-lista_pdi_estacao(H1,H2), listas_pdis_estacoes(T1,T2).
+
+lista_pdi_estacao([],[]).
+lista_pdi_estacao([H|T], [[H,Estacao, Duracao]|Res]):-pontoDeInteresse(H,Estacao,_,_,Duracao),!, lista_pdi_estacao(T,Res).
+
+somar_tempo( [[_, _, Duracao]|[]], Duracao):-!.
+somar_tempo( [[_, E1, D1] | [ [P2,E2,L2] | R2 ]], Duracao):- percurso_mais_rapido(E1,E2, dia,[ _, D2, _]), Ra is D1 + D2, somar_tempo([ [P2,E2,L2] | R2 ], Duracao2), Duracao is Ra + Duracao2.
+
+somar_todos([H|[]], [[Soma,[H]] | [] ]):- somar_tempo(H,Soma).
+somar_todos([H|T], [[Soma,[H]] | Res ]):-somar_tempo(H,Soma),Soma>300,Soma<480, somar_todos(T,Res).
+somar_todos([_|T], Res):- somar_todos(T,Res).
+
+verficar_pdi(PDI):-pontoDeInteresse(PDI,_,_,_,_).
+/***************************/
+
+/****************************
 Predicados auxiliares
 ****************************/
+
+todos_guias(Lista, R):-findall( X, get_set(X,Lista), R).
+
+get_set(L0, L) :-
+    length(L, Len),
+    length(L0, Len),
+    apply_elem(L0, L).
+
+apply_elem([], _).
+apply_elem([X|Xs], L) :-
+    member(X, L),
+	delete(L, X, Li),
+    apply_elem(Xs, Li).
+
+
 
 remove_repetidos(LisR,Final):-remove_repetidos(LisR,[],Final).
 
