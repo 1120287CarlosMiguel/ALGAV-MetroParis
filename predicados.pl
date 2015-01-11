@@ -45,7 +45,7 @@ predicados para gerar percursos
 ********************************/
 
 percurso_mais_rapido(Origem,Destino,Min,Dia,Perc):-gera_percursos(Origem,Destino,Min,Dia,Lista),
-																							 percurso_rapido(Lista,[],Perc,Min,0),!.
+																							 percurso_rapido(Lista,[],Perc,Min,0).
 
 percurso_rapido([],Perc,Perc,_,_):-!.
 percurso_rapido([[A1,B1,C1,[Chegada1|D1]]|T],[],Perc,Min,0):-Dif is Chegada1 - Min,
@@ -91,13 +91,13 @@ go1Branch([(MinDes,Horas,Lin,C,[Ult|T])|Outros],Dest,Perc,Dia,Custo,Linhas,Hor):
 
 proximo_no(X,T,Z,C,Dia,Linhas,Nl,T,MinDes,[],NHoras):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,MinDes,Linha),
 																											\+ member(Z,T), Nl = [Linha|Linhas],
-																											calcula_proxima_frequencia(X,Z,Dia,MinDes,C,MinDes,H),
+																											calcula_proxima_frequencia(MinDes,C,MinDes,H),
 																											%encontra_hora(X,Z,Dia,MinDes,(_,_,H)),
 																											NHoras = [H].
 
 proximo_no(X,T,Z,C,Dia,Linhas,Nl,T,_,[Hora|Tail],NHoras):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,Hora,Linha),
 																											\+ member(Z,T), Nl = [Linha|Linhas],
-																											calcula_proxima_frequencia(X,Z,Dia,Hora,C,Hora,H),
+																											calcula_proxima_frequencia(Hora,C,Hora,H),
 																											%encontra_hora(X,Z,Dia,Hora,(_,_,H)),
 																											NHoras = [H,Hora|Tail].
 
@@ -106,26 +106,22 @@ tempo_de_viagem(dia,C,Tempo,Linha):-(Tempo<1200,horario(Linha,_,_,_,_,C,_,_,_),!
 tempo_de_viagem(sabado,C,_,Linha):-horario(Linha,_,_,_,_,_,_,C,_).
 tempo_de_viagem(domingo,C,_,Linha):-horario(Linha,_,_,_,_,_,_,_,C).
 
-calcula_proxima_frequencia(Origem,Destino,Dia,Tempo,Frequencia,TempC,TempoFinal) :-Tempo > TempC,
-																															 %valida_horario(Origem,Destino,Dia,Ini,Fim),
-																															 Res is Tempo mod Frequencia,
-																															 Res == 0, TempoFinal is Tempo,!.
+calcula_proxima_frequencia(Temp,Frequencia,TempC,TempoFinal) :-Temp > TempC,Res is Temp mod Frequencia,
+																															 Res == 0, TempoFinal is Temp,!.
 
-calcula_proxima_frequencia(Origem,Destino,Dia,Tempo,Frequencia,TempC,TempoFinal) :- NT is Tempo + 1,
-												!,calcula_proxima_frequencia(Origem,Destino,Dia,NT, Frequencia,TempC,TempoFinal).
+calcula_proxima_frequencia(Tempo,Frequencia,TempC,TempoFinal) :- NT is Tempo + 1,
+												!,calcula_proxima_frequencia(NT, Frequencia,TempC,TempoFinal).
 
 /**************************************************
 Lista com 1 e Ultimo metro a chegar a paragem de determinada paragem
 ***************************************************/
 
-valida_horario(Origem,Destino,Dia,Primeiro,Final):-horario_paragem(Origem,Destino,Dia,[(_,_,Primeiro),(_,_,Final)]).
-
 horario_paragem(Origem,Destino,Dia,Horario):-liga(Linha,Origem,Destino),
 																						 bagof(H,mostraHorario(Linha,Dia,H),Horarios),
 																						 encontra_horarios(Origem,Destino,Horarios,[],TodosH),
 																						 sort(TodosH,HoraFinal),
-																						 horario_abertura_fecho(HoraFinal,[],Final),!,
-																						 sort(Final,Horario).
+																						 horario_abertura_fecho(HoraFinal,[],Final),
+																						Horario = Final.
 
 horario_abertura_fecho([],Hora,Horario):-!,Horario = Hora.
 horario_abertura_fecho([H|T],[],Horario):-!,horario_abertura_fecho(T,[H],Horario).
@@ -179,9 +175,9 @@ mostraHorario(Linha,domingo,Lista):-horario(Linha,Origem,_,HoraIn,HoraFim,_,_,_,
 lista_frequencias(_,_,_,HoraActual,HoraFim,_,_,ListaTemp,ListaFinal):- HoraActual >= HoraFim, !, ListaFinal = ListaTemp.
 
 lista_frequencias(Linha,Estacao,NEstacao,HoraIn,HoraFim,FreqDia,FreqNoite,ListaTemp,ListaFinal):-liga(Linha,NEstacao,NNEstacao),
-																									 									(var(Estacao);Estacao \= NNEstacao;horario(Linha,_,NEstacao,_,_,_,_,_,_)),
+																																		(var(Estacao);Estacao \= NNEstacao;horario(Linha,_,NEstacao,_,_,_,_,_,_)),
 																																		(HoraIn < 1200,NHora is HoraIn + FreqDia;HoraIn > 1200,NHora is HoraIn + FreqNoite),
-																									 									lista_frequencias(Linha,NEstacao,NNEstacao,NHora,HoraFim,FreqDia,FreqNoite,[(NEstacao,NNEstacao,HoraIn)|ListaTemp],ListaFinal).
+																																		lista_frequencias(Linha,NEstacao,NNEstacao,NHora,HoraFim,FreqDia,FreqNoite,[(NEstacao,NNEstacao,HoraIn)|ListaTemp],ListaFinal).
 
 /****************************
 ********** Visitas **********
@@ -194,10 +190,12 @@ lista_frequencias(Linha,Estacao,NEstacao,HoraIn,HoraFim,FreqDia,FreqNoite,ListaT
 2 ver ao a lista que dura menos
  */
 
-pontos_de_interesse(ListPDI):- todos_guias(ListPDI, R1), listas_pdis_estacoes(R1,R2), somar_todos(R2,Guia), sort(Guia, [T,H|_]),write('Tempo: '),write(T),nl,imprimirGuia(H).
+
+pontos_de_interesse(ListPDI):- todos_guias(ListPDI, R1), listas_pdis_estacoes(R1,R2), somar_todos(R2,Guia), sort(Guia, [[T|[[H]]],_|_]),T>270,T<510,write('Tempo: '),write(T),nl,write('estacao (Monumento - Tempo )'),nl,imprimirGuia(H),!;false.
 
 imprimirGuia([]):-!.
-imprimirGuia([H|T]):-write(H),nl, imprimirGuia(T).
+imprimirGuia([[ PDI, E, Time ]|T]):-write('--> '),write(E),write(' ('),write(PDI),write(' - '), write(Time), write(' )'),nl,!, imprimirGuia(T).
+
 
 listas_pdis_estacoes([],[]).
 listas_pdis_estacoes([H1|T1], [H2|T2]):-lista_pdi_estacao(H1,H2), listas_pdis_estacoes(T1,T2).
@@ -205,11 +203,11 @@ listas_pdis_estacoes([H1|T1], [H2|T2]):-lista_pdi_estacao(H1,H2), listas_pdis_es
 lista_pdi_estacao([],[]).
 lista_pdi_estacao([H|T], [[H,Estacao, Duracao]|Res]):-pontoDeInteresse(H,Estacao,_,_,Duracao),!, lista_pdi_estacao(T,Res).
 
-somar_tempo( [[_,_,Duracao]|[]], Duracao):-!.
-somar_tempo( [[_, E1, D1] | [ [P2,E2,L2] | R2 ]], Duracao):- percurso_mais_rapido(E1,E2, dia,[ _, D2, _]), Ra is D1 + D2, somar_tempo([ [P2,E2,L2] | R2 ], Duracao2), Duracao is Ra + Duracao2.
+somar_tempo( [[_, _, Duracao]|[]], Duracao):-!.
+somar_tempo( [[_, E1, D1] | [ [P2,E2,L2] | R2 ]], Duracao):- percurso_mais_rapido(E1,E2,480, dia,[_, D2,_,_]), Ra is D1 + D2, somar_tempo([ [P2,E2,L2] | R2 ], Duracao2), Duracao is Ra + Duracao2.
 
 somar_todos([H|[]], [[Soma,[H]] | [] ]):- somar_tempo(H,Soma).
-somar_todos([H|T], [[Soma,[H]] | Res ]):-somar_tempo(H,Soma),Soma>300,Soma<480, somar_todos(T,Res).
+somar_todos([H|T], [[Soma,[H]] | Res ]):-somar_tempo(H,Soma), somar_todos(T,Res).
 somar_todos([_|T], Res):- somar_todos(T,Res).
 
 verficar_pdi(PDI):-pontoDeInteresse(PDI,_,_,_,_).
@@ -226,7 +224,7 @@ get_set(L0, L) :-
     length(L0, Len),
     apply_elem(L0, L).
 
-apply_elem([], _).
+apply_elem([], []).
 apply_elem([X|Xs], L) :-
     member(X, L),
 	delete(L, X, Li),
