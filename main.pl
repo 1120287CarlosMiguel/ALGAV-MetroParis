@@ -51,32 +51,33 @@ menu_percurso:- write('***Vamos iniciar a configuracao do seu percurso***'),nl,
                 read(OpTipo),
                 number(OpTipo),OpTipo > 0, OpTipo < 4,
                 cria_percurso(OpTipo,TipoDia,Min,Eorigem,Edestino,Percurso),
-                imprime_percurso(Percurso).
+                imprime_percurso(Percurso,Min).
 
 
 
-escolher_opcao_tempo(1,Min,Tipo):-Min<1200,Tipo = dia.
-escolher_opcao_tempo(1,Min,Tipo):-Min>1200,Tipo = noite.
+escolher_opcao_tempo(1,_,dia).
 escolher_opcao_tempo(2,_,sabado).
 escolher_opcao_tempo(3,_,domingo).
 
 %menos trocas
-cria_percurso(1,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_menos_trocas(Eorigem,Edestino,TipoDia,Percurso).
+cria_percurso(1,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_menos_trocas(Eorigem,Edestino,Min,TipoDia,Percurso).
 
 %mais rapido
-cria_percurso(2,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_mais_rapido(Eorigem,Edestino,TipoDia,Percurso).
+cria_percurso(2,TipoDia,Min,Eorigem,Edestino,Percurso):-percurso_mais_rapido(Eorigem,Edestino,Min,TipoDia,Percurso).
 
 %menor percuros a pe
 %cria_percurso(3,TipoDia,Min,Eorigem,Edestino,Precurso).
 
-imprime_percurso([Perc,Dur,Linhas]):-nl,write('Duracao: '),write(Dur),nl,
+imprime_percurso([Perc,_,Linhas,[H|T]],Min):-nl,write('Hora Escolhida: '),write(Min),nl,
+                              write('Duracao: '), Dur is H - Min, write(Dur),nl,
+                              reverse([H|T],Horas),
                               write('Linhas: '),nl,
                               imprime_linhas(Linhas),
                               write('Estacoes: '),nl,
-                              imprime_percurso1(Perc).
+                              imprime_percurso1(Perc,Horas).
 
-imprime_percurso1([]):-!.
-imprime_percurso1([H|T]):-write(H),nl,imprime_percurso1(T).
+imprime_percurso1([],[]):-!.
+imprime_percurso1([H1|T1],[H2|T2]):-write(H1),write('  '),write(H2),nl,imprime_percurso1(T1,T2).
 
 imprime_linhas([H]):-!,write(H),nl.
 imprime_linhas([H|T]):-write(H),write('=>'),imprime_linhas(T).

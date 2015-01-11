@@ -42,53 +42,103 @@ horas_para_minutos(_,_):-write('Hora invalida'),nl,false.
 predicados para gerar percursos
 ********************************/
 
-percurso_mais_rapido(Origem,Destino,Dia,Perc):-gera_percursos(Origem,Destino,Dia,Lista),
-																							 percurso_rapido(Lista,[],Perc).
+percurso_mais_rapido(Origem,Destino,Min,Dia,Perc):-gera_percursos(Origem,Destino,Min,Dia,Lista),
+																							 percurso_rapido(Lista,[],Perc,Min,0).
 
-percurso_rapido([],Perc,Perc):-!.
-percurso_rapido([H|T],[],Perc):-!,percurso_rapido(T,H,Perc).
-percurso_rapido([[Perc1,Temp1,_]|T],[_,Temp2,_],Perc):- Temp1 < Temp2,
-																									 !,percurso_rapido(T,[Perc1,Temp1,_],Perc).
+percurso_rapido([],Perc,Perc,_,_):-!.
+percurso_rapido([[A1,B1,C1,[Chegada1|D1]]|T],[],Perc,Min,0):-Dif is Chegada1 - Min,
+																														 percurso_rapido(T,[A1,B1,C1,[Chegada1|D1]],Perc,Min,Dif).
 
-percurso_rapido([_|T],Perc,Percf):-!,percurso_rapido(T,Perc,Percf).
+percurso_rapido([[A1,B1,C1,[Chegada1|D1]]|T],PercTemp,Perc,Min,Dif) :- Dif2 is Chegada1 - Min,
+																																			 Dif2 < Dif,
+																																			percurso_rapido(T,PercTemp,Perc,Min,Dif2).
 
-percurso_menos_trocas(Origem,Destino,Dia,Perc):-gera_percursos(Origem,Destino,Dia,Lista),
+percurso_rapido([_|T],PercTemp,Perc,Min,Dif):-percurso_rapido(T,PercTemp,Perc,Min,Dif).
+
+
+percurso_menos_trocas(Origem,Destino,Min,Dia,Perc):-gera_percursos(Origem,Destino,Min,Dia,Lista),
 																								percurso_trocas(Lista,[],Perc).
 
 percurso_trocas([],Perc,Perc):-!.
 percurso_trocas([H|T],[],Perc):-!,percurso_trocas(T,H,Perc).
-percurso_trocas([[Perc1,Temp1,Linhas1]|T],[_,_,Linhas2],Perc):- length(Linhas1,T1),length(Linhas2,T2),T1<T2,
-																									!,percurso_trocas(T,[Perc1,Temp1,Linhas1],Perc).
+percurso_trocas([[Perc1,Temp1,Linhas1,Horas1]|T],[_,_,Linhas2,_],Perc):- length(Linhas1,T1),length(Linhas2,T2),T1<T2,
+																									!,percurso_trocas(T,[Perc1,Temp1,Linhas1,Horas1],Perc).
 
 percurso_trocas([_|T],Perc,Percf):-!,percurso_trocas(T,Perc,Percf).
 
 
-gera_percursos(Orig,Dest,Dia,Lista):-findall([Perc,Custo,Linhas],goBranch(Orig,Dest,Perc,Dia,Custo,Linhas),Lista).
+gera_percursos(Orig,Dest,MinInicio,Dia,Lista):-findall([Perc,Custo,Linhas,HorasSaida],goBranch(Orig,Dest,Perc,MinInicio,Dia,Custo,Linhas,HorasSaida),Lista).
 
-goBranch(Orig,Dest,Perc,Dia,Custo,Linhas):-
-	go1Branch([([],0,[Orig])],Dest,P,Dia,Custo,L),
+goBranch(Orig,Dest,Perc,MinEsc,Dia,Custo,Linhas,HorasSaida):-
+	go1Branch([(MinEsc,[],[],0,[Orig])],Dest,P,Dia,Custo,L,H),
 	reverse(P,Perc),
-	remove_repetidos(L,Linhas).
+	remove_repetidos(L,Linhas),
+	HorasSaida = H.
 
-go1Branch([(Linhas,C,Prim)|_],Dest,Prim,_,C,Linhas):- Prim=[Dest|_].
-go1Branch([(_,_,[Dest|_])|Resto],Dest,Perc,Dia,Custo,Linhas):- !, go1Branch(Resto,Dest,Perc,Dia,Custo,Linhas).
-go1Branch([(Lin,C,[Ult|T])|Outros],Dest,Perc,Dia,Custo,Linhas):-
-		findall((NLin,NC,[Z,Ult|T]),
-			(proximo_no(Ult,T,Z,C1,Dia,Lin,NLin),NC is C+C1),Lista),
+go1Branch([(MinEsc,Horas,Linhas,C,Prim)|_],Dest,Prim,_,C,Linhas,Horas):- Prim=[Dest|_].
+
+go1Branch([(_,_,_,_,[Dest|_])|Resto],Dest,Perc,Dia,Custo,Linhas,Horas):- !, go1Branch(Resto,Dest,Perc,Dia,Custo,Linhas,Horas).
+
+go1Branch([(MinDes,Horas,Lin,C,[Ult|T])|Outros],Dest,Perc,Dia,Custo,Linhas,Hor):-
+		findall((MinDes,NHoras,NLin,NC,[Z,Ult|T]),
+			(proximo_no(Ult,T,Z,C1,Dia,Lin,NLin,T,MinDes,Horas,NHoras),NC is C+C1),Lista),
 		append(Outros,Lista,NPerc),
 		sort(NPerc,NPerc1),
 		%write(NPerc1),nl,
-		go1Branch(NPerc1,Dest,Perc,Dia,Custo,Linhas).
+		go1Branch(NPerc1,Dest,Perc,Dia,Custo,Linhas,Hor).
 
-proximo_no(X,T,Z,C,Dia,Linhas,Nl):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,Linha), \+ member(Z,T), Nl = [Linha|Linhas].
+proximo_no(X,T,Z,C,Dia,Linhas,Nl,T,MinDes,[],NHoras):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,Linha),
+																											\+ member(Z,T), Nl = [Linha|Linhas], encontra_hora(X,Z,Dia,MinDes,(_,_,H)),
+																											NHoras = [H].
 
-tempo_de_viagem(dia,C,Linha):-horario(Linha,_,_,_,C,_,_,_).
+proximo_no(X,T,Z,C,Dia,Linhas,Nl,T,_,[Hora|Tail],NHoras):- liga(Linha,X,Z), tempo_de_viagem(Dia,C,Linha),
+																											\+ member(Z,T), Nl = [Linha|Linhas], encontra_hora(X,Z,Dia,Hora,(_,_,H)),
+																											NHoras = [H,Hora|Tail].
 
-tempo_de_viagem(noite,C,Linha):-horario(Linha,_,_,_,_,C,_,_).
 
-tempo_de_viagem(sabado,C,Linha):-horario(Linha,_,_,_,_,_,C,_).
+tempo_de_viagem(dia,C,Linha):-horario(Linha,_,_,_,_,C,_,_,_).
+tempo_de_viagem(noite,C,Linha):-horario(Linha,_,_,_,_,_,C,_,_).
+tempo_de_viagem(sabado,C,Linha):-horario(Linha,_,_,_,_,_,_,C,_).
+tempo_de_viagem(domingo,C,Linha):-horario(Linha,_,_,_,_,_,_,_,C).
 
-tempo_de_viagem(domingo,C,Linha):-horario(Linha,_,_,_,_,_,_,C).
+/****************************************************
+Retorna a elemento com hora mais proxima da desejada
+*****************************************************/
+
+encontra_hora(Origem,Destino,Dia,HoraDese,Hora) :- liga(Linha,Origem,Destino), bagof(Perc,mostraHorario(Linha,Dia,Perc),Lista),encontra_frequencia(Origem,Destino,Lista,HoraDese,HoraTemp,Hora),!,Hora = Hora.
+
+encontra_frequencia(Origem,Destino,[],_,HoraTemp,Hora):-!, Hora = HoraTemp.
+encontra_frequencia(Origem,Destino,[H|T],HoraDes,HoraTemp,Hora) :-encontra_melhor_frequencia(Origem,Destino,H,HoraDes,HoraTemp,Hora1),
+																								 encontra_frequencia(Origem,Destino,T,HoraDes,Hora1,Hora).
+
+encontra_melhor_frequencia(_,_,[],_,Hora,Hora):-!.
+encontra_melhor_frequencia(Origem,Destino,[(Origem,Destino,Hora)|T],HoraDes,HoraFinal,Hora1):-var(HoraFinal),
+																																												Hora >= HoraDes,
+																																												!,encontra_melhor_frequencia(_,_,[],HoraDes,(Origem,Destino,Hora),Hora1).
+
+encontra_melhor_frequencia(Origem,Destino,[(Origem,Destino,Hora)|T],HoraDes,(Origem,Destino,HoraFinal),Hora1):-Hora >= HoraDes, HoraFinal > Hora,
+																																												!,encontra_melhor_frequencia(_,_,[],HoraDes,(Origem,Destino,Hora),Hora1).
+
+encontra_melhor_frequencia(Origem,Destino,[(Origem,Destino,Hora)|T],HoraDes,(Origem,Destino,HoraFinal),Hora1):-Hora >= HoraDes, HoraFinal < Hora,
+																																												!,encontra_melhor_frequencia(_,_,[],HoraDes,(Origem,Destino,HoraFinal),Hora1).
+
+encontra_melhor_frequencia(Origem,Destino,[(_,_,_)|T],HoraDes,HoraFinal,Hora):- !,encontra_melhor_frequencia(Origem,Destino,T,HoraDes,HoraFinal,Hora).
+
+
+/****************************************************************************
+Cria lista com elementos de tipod (Origem,Destino,Minutos de Saida de Origem)
+*****************************************************************************/
+
+mostraHorario(Linha,dia,Lista):-horario(Linha,Origem,_,HoraIn,HoraFim,HoraDia,HoraNoite,_,_),lista_frequencias(Linha,A,Origem,HoraIn,HoraFim,HoraDia,HoraNoite,[],Lis), reverse(Lis,Lista).
+mostraHorario(Linha,sabado,Lista):-horario(Linha,Origem,_,HoraIn,HoraFim,_,_,HoraDia,_),lista_frequencias(Linha,A,Origem,HoraIn,HoraFim,HoraDia,HoraDia,[],Lis), reverse(Lis,Lista).
+mostraHorario(Linha,domingo,Lista):-horario(Linha,Origem,_,HoraIn,HoraFim,_,_,_,HoraDia),lista_frequencias(Linha,A,Origem,HoraIn,HoraFim,HoraDia,HoraDia,[],Lis), reverse(Lis,Lista).
+
+lista_frequencias(_,_,_,HoraActual,HoraFim,_,_,ListaTemp,ListaFinal):- HoraActual >= HoraFim, !, ListaFinal = ListaTemp.
+
+lista_frequencias(Linha,Estacao,NEstacao,HoraIn,HoraFim,FreqDia,FreqNoite,ListaTemp,ListaFinal):-liga(Linha,NEstacao,NNEstacao),
+																									 									(var(Estacao);Estacao \= NNEstacao;horario(Linha,_,NEstacao,_,_,_,_,_,_)),
+																																		(HoraIn < 1200,NHora is HoraIn + FreqDia;HoraIn > 1200,NHora is HoraIn + FreqNoite),
+																									 									lista_frequencias(Linha,NEstacao,NNEstacao,NHora,HoraFim,FreqDia,FreqNoite,[(NEstacao,NNEstacao,HoraIn)|ListaTemp],ListaFinal).
 
 /****************************
 Predicados auxiliares
